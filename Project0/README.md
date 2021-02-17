@@ -19,6 +19,9 @@ colorSecondaryVariant #0C5DFD
 6. Добавить показ Toast при нажатии на кнопки с информацией о нажатой кнопке
 
 ## Комментарии
+- Для установки ограничения на ввод только чисел в поле был использован атрибут `inputType` со значением `number`, т.к. в массиве количество элементов всегда положительное - `numberSigned` (число со знаком) нам не подходит
+- В целях ускорения разработки, события клика задаются через xml а не в java коде
+- Для обоих подзадач первой части заданы разные лимиты, т.к. для работы варианта с умножением необходимы числа значительно меньше
 - Вместо файла `themes.xml` было удобнее использовать `colors.xml`, к тому же не имеет смысл плодить файлы, выполняющую задачу, тем более при их текущем объеме.
 - Опять же для удобства, изображение было помещено в `drawable-v24`, среда разработки предложила поступить аналогично.
 - При выводе информации о нажатой кнопке используются данные из ресурсов.
@@ -108,12 +111,138 @@ public class MainActivity extends AppCompatActivity {
 
 #### DemoActivity.java
 ```java
+package ru.devredowl.project0;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DemoActivity extends AppCompatActivity {
+
+    // Объявляем свойства
+    private EditText number;
+    private TextView result;
+    private int limit1 = 10000;
+    private int limit2 = 32;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_demo);
+        number = findViewById(R.id.number);
+        result = findViewById(R.id.result);
+    }
+
+    // Метод, получающий длину необходимого массива из текстового поля
+    public int validateLength() {
+        String numberVal = number.getText().toString();
+        numberVal = numberVal.isEmpty() ? "0" : numberVal;
+        return Integer.parseInt(numberVal);
+    }
+
+    // Сложение всех элементов до данного числа
+    public void onButton1Click(View view) {
+        int len = validateLength();
+        if(len > limit1)  {
+            Toast toast = Toast.makeText(getApplicationContext(),  String.format(getString(R.string.NoMoreThan), limit1), Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i<len; i++){
+            list.add(i+1);
+        }
+
+        int sum = list.stream().mapToInt(Integer::intValue).sum();
+        result.setText(String.format("Result1: %d", sum));
+    }
+
+    // Произведение всех четных чисел
+    public void onButton2Click(View view) {
+        int len = validateLength();
+        if(len > limit2)  {
+            Toast toast = Toast.makeText(getApplicationContext(),  String.format(getString(R.string.NoMoreThan), limit2), Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+
+        int mul = 0;
+        for (int i = 0; i<len; i++){
+            if(i == 1) mul = 2;
+            else if (i % 2 != 0) mul *= (i+=1);
+        }
+
+        result.setText(String.format("Result2: %d", mul));
+    }
+
+}
 ```
 #### activity_demo.xml
 ```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DemoActivity">
+
+    <EditText
+        android:id="@+id/number"
+        android:layout_width="fill_parent"
+        android:layout_height="65dp"
+        android:hint="@string/NumberPlaceholder"
+        android:ems="10"
+        android:inputType="number"
+        android:text=""
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Button 1"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:onClick="onButton1Click"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/number" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Button 2"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:onClick="onButton2Click"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button" />
+
+    <TextView
+        android:id="@+id/result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:text="Результат"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button3" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
 
 ## Скриншоты:
+#### Часть 1:
+![Часть 1](https://github.com/DevRedOWL/HSE-Android-Course/blob/main/Screenshots/0_1.png?raw=true)
 #### Часть 2:
 ![Часть 2](https://github.com/DevRedOWL/HSE-Android-Course/blob/main/Screenshots/0_2.png?raw=true)

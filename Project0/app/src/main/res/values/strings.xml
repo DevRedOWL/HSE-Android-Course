@@ -2,5 +2,7 @@
     <string name="app_name">Timetable for HSE</string>
     <string name="stud_schedule">Расписание для студентов</string>
     <string name="prep_schedule">Расписание для преподавателей</string>
+    <string name="NumberPlaceholder">Input number of elements</string>
+    <string name="NoMoreThan">Значение не может быть больше, чем %d</string>
 
 </resources>
